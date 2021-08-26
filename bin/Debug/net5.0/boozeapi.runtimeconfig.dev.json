@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\eholy\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\eholy\\.nuget\\packages"
+    ]
+  }
+}
