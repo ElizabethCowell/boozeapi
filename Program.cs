@@ -11,22 +11,44 @@ namespace boozeapi
         {
             var cocktail = new HttpClient();
 
-            Console.WriteLine("What liquor do you have?");
-            var liquor = Console.ReadLine();
-
-            var listOption = cocktail.GetStringAsync($"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={liquor}").Result;
+            bool answer = false;
+            string listOption = "";
+            do
+            {
+                Console.WriteLine("What liquor do you have on hand?");
+                var liquor = Console.ReadLine();
+                listOption = cocktail.GetStringAsync($"https://www.thecocktaildb.com/api/json/v1/1/filter.php?i={liquor}").Result;
+                if (listOption != "")
+                { 
+                    answer = true;
+                }
+                else
+                {
+                    Console.WriteLine("That ingredient doesn't seem to be listed. Please try again.");
+                }
+            } while (answer == false);
 
             var rnd = new Random();
             var selected = false;
             JToken drinkId = " ";
             do
             {
-                var rndOption = rnd.Next(0, 100);
+                bool drink = false;
+                do
+                {
+                    var rndOption = rnd.Next(0, 100);
 
-                var yourOption = JToken.Parse(listOption).SelectToken($"drinks[{rndOption}].strDrink");
-                drinkId = JToken.Parse(listOption).SelectToken($"drinks[{rndOption}].idDrink");
+                    var yourOption = JToken.Parse(listOption).SelectToken($"drinks[{rndOption}].strDrink");
+                    drinkId = JToken.Parse(listOption).SelectToken($"drinks[{rndOption}].idDrink");
 
-                Console.WriteLine($"How about a {yourOption}? \n Is this what you want? Y/N?");
+                    if (yourOption != null)
+                    {
+                        Console.WriteLine($"How about a {yourOption}? \n Is this what you want? Y/N?");
+                        drink = true;
+                    }
+                } while (drink == false);
+
+
                 var response = Console.ReadLine().ToLower();
                 if (response == "n")
                 {
@@ -62,11 +84,14 @@ namespace boozeapi
             {
                 item = JToken.Parse(ingredients).SelectToken($"drinks[0].strIngredient{i}");
                 measurement = JToken.Parse(ingredients).SelectToken($"drinks[0].strMeasure{i}");
-            Console.WriteLine($"{item} {measurement}");
+                if (item != null)
+                {
+                    Console.WriteLine($"{item} {measurement}");
+                }
                 i++;
 
 
-            } while (item != null);
+            } while (i <= 12);
 
             var directions = JToken.Parse(ingredients).SelectToken("drinks[0].strInstructions");
             Console.WriteLine(directions);
